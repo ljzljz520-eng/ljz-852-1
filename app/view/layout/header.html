@@ -1,0 +1,30 @@
+<?php
+/**
+ * @var string $pageTitle
+ */
+?>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><?= htmlspecialchars($pageTitle ?? '公开课资料索引') ?> - 公开课资料索引</title>
+<meta name="description" content="公开课程学习资料的元数据索引与检索导航,不提供文件存储与下载">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="/">📚 公开课资料索引</a>
+    <nav>
+      <a href="/">首页</a>
+      <a href="/disclaimer">免责声明</a>
+    </nav>
+  </div>
+</header>
+<div class="compliance-banner">
+  <div class="container">
+    ⚖️ 本站仅收录公开课程资料的<strong>元数据索引</strong>,不存储、不提供任何文件下载;资料版权归原作者/机构所有,仅供学习交流,如有侵权请联系删除。
+  </div>
+</div>
+<main class="container">

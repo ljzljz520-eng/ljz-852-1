@@ -1,0 +1,76 @@
+<?php
+/** @var array $doc @var array $files @var array $similar @var array $tags */
+$pageTitle = $doc['title'];
+include __DIR__ . '/../layout/header.html';
+?>
+<article class="detail">
+  <div class="result-head">
+    <span class="badge <?= file_icon($doc['file_type']) ?>"><?= strtoupper(htmlspecialchars($doc['file_type'])) ?></span>
+    <h1 class="detail-title"><?= htmlspecialchars($doc['title']) ?></h1>
+  </div>
+
+  <div class="result-meta detail-meta">
+    <span>课程:<?= htmlspecialchars($doc['course']) ?></span>
+    <span>总大小:<?= format_size((int)$doc['file_size']) ?></span>
+    <span>发布时间:<?= format_date($doc['published_at']) ?></span>
+    <span>热度:<?= (int)$doc['downloads'] ?></span>
+  </div>
+
+  <?php if ($tags): ?>
+  <div class="tags">
+    <?php foreach ($tags as $tag): ?>
+      <a class="tag" href="/search?q=<?= urlencode($tag) ?>">#<?= htmlspecialchars($tag) ?></a>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
+
+  <section class="detail-section">
+    <h2>资料简介</h2>
+    <p><?= nl2br(htmlspecialchars($doc['summary'])) ?></p>
+  </section>
+
+  <section class="detail-section">
+    <h2>文件清单(共 <?= count($files) ?> 个)</h2>
+    <?php if ($files): ?>
+    <table class="file-table">
+      <thead><tr><th>#</th><th>文件名</th><th>大小</th></tr></thead>
+      <tbody>
+      <?php foreach ($files as $i => $f): ?>
+        <tr>
+          <td><?= $i + 1 ?></td>
+          <td><?= htmlspecialchars($f['name'] ?? '') ?></td>
+          <td><?= format_size((int)($f['size'] ?? 0)) ?></td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+    <?php else: ?>
+      <p class="empty">暂无文件清单。</p>
+    <?php endif; ?>
+    <div class="notice-box">
+      ⚠️ <strong>合规提示:</strong>以上仅为文件元数据清单,本站<strong>不提供下载</strong>。请通过正规渠道获取课程资料,尊重知识产权;资料仅供学习交流,请于获取后 24 小时内删除,不得二次传播或用于商业用途。
+    </div>
+  </section>
+
+  <?php if ($similar): ?>
+  <section class="detail-section">
+    <h2>相似资料</h2>
+    <ul class="result-list">
+      <?php foreach ($similar as $row): ?>
+      <li class="result-item">
+        <div class="result-head">
+          <span class="badge <?= file_icon($row['file_type']) ?>"><?= strtoupper(htmlspecialchars($row['file_type'])) ?></span>
+          <a class="result-title" href="/material/<?= (int)$row['id'] ?>"><?= htmlspecialchars($row['title']) ?></a>
+        </div>
+        <div class="result-meta">
+          <span>课程:<?= htmlspecialchars($row['course']) ?></span>
+          <span>大小:<?= format_size((int)$row['file_size']) ?></span>
+          <span>发布:<?= format_date($row['published_at']) ?></span>
+        </div>
+      </li>
+      <?php endforeach; ?>
+    </ul>
+  </section>
+  <?php endif; ?>
+</article>
+<?php include __DIR__ . '/../layout/footer.html'; ?>

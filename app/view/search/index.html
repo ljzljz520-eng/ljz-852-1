@@ -1,0 +1,62 @@
+<?php
+/** @var string $keyword @var array $rows @var int $total @var int $page @var int $totalPages @var string $fileType @var array $fileTypes @var ?string $error */
+$pageTitle = $keyword !== '' ? "搜索:{$keyword}" : '搜索';
+include __DIR__ . '/../layout/header.html';
+?>
+<form class="search-box search-box-sm" action="/search" method="get">
+  <input type="text" name="q" value="<?= htmlspecialchars($keyword) ?>" maxlength="80" required>
+  <?php if ($fileType): ?><input type="hidden" name="type" value="<?= htmlspecialchars($fileType) ?>"><?php endif; ?>
+  <button type="submit">搜 索</button>
+</form>
+
+<?php if ($keyword !== ''): ?>
+<div class="filter-bar">
+  <span>共找到 <strong><?= (int)$total ?></strong> 条结果</span>
+  <span class="filters">
+    类型筛选:
+    <a class="<?= $fileType === '' ? 'active' : '' ?>" href="/search?q=<?= urlencode($keyword) ?>">全部</a>
+    <?php foreach ($fileTypes as $t): ?>
+      <a class="<?= $fileType === $t ? 'active' : '' ?>" href="/search?q=<?= urlencode($keyword) ?>&type=<?= $t ?>"><?= strtoupper($t) ?></a>
+    <?php endforeach; ?>
+  </span>
+</div>
+<?php endif; ?>
+
+<?php if ($error): ?>
+  <p class="empty"><?= htmlspecialchars($error) ?></p>
+<?php elseif ($keyword === ''): ?>
+  <p class="empty">请输入关键词开始搜索。</p>
+<?php elseif (!$rows): ?>
+  <p class="empty">没有找到与「<?= htmlspecialchars($keyword) ?>」相关的资料,换个关键词试试。</p>
+<?php else: ?>
+<ul class="result-list">
+  <?php foreach ($rows as $row): ?>
+  <li class="result-item">
+    <div class="result-head">
+      <span class="badge <?= file_icon($row['file_type']) ?>"><?= strtoupper(htmlspecialchars($row['file_type'])) ?></span>
+      <a class="result-title" href="/material/<?= (int)$row['id'] ?>"><?= htmlspecialchars($row['title']) ?></a>
+    </div>
+    <p class="result-snippet"><?= $row['snippet'] ?: htmlspecialchars(mb_substr($row['summary'], 0, 120)) ?></p>
+    <div class="result-meta">
+      <span>课程:<?= htmlspecialchars($row['course']) ?></span>
+      <span>大小:<?= format_size((int)$row['file_size']) ?></span>
+      <span>发布:<?= format_date($row['published_at']) ?></span>
+      <span>热度:<?= (int)$row['downloads'] ?></span>
+    </div>
+  </li>
+  <?php endforeach; ?>
+</ul>
+
+<?php if ($totalPages > 1): ?>
+<nav class="pagination">
+  <?php for ($p = 1; $p <= $totalPages && $p <= 20; $p++): ?>
+    <?php if ($p === $page): ?>
+      <span class="active"><?= $p ?></span>
+    <?php else: ?>
+      <a href="/search?q=<?= urlencode($keyword) ?>&type=<?= urlencode($fileType) ?>&page=<?= $p ?>"><?= $p ?></a>
+    <?php endif; ?>
+  <?php endfor; ?>
+</nav>
+<?php endif; ?>
+<?php endif; ?>
+<?php include __DIR__ . '/../layout/footer.html'; ?>

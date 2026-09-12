@@ -1,0 +1,44 @@
+<?php
+/** @var array $latest @var array $stats */
+$pageTitle = '首页';
+include __DIR__ . '/../layout/header.html';
+?>
+<section class="hero">
+  <h1>公开课资料索引</h1>
+  <p class="muted">已收录 <?= (int)$stats['count'] ?> 条资料索引 · 累计 <?= format_size((int)$stats['bytes']) ?></p>
+  <form class="search-box" action="/search" method="get">
+    <input type="text" name="q" placeholder="输入课程名 / 关键词,如:操作系统、高等数学、考研英语…" maxlength="80" required autofocus>
+    <button type="submit">搜 索</button>
+  </form>
+  <div class="hot-words">
+    热门:
+    <?php foreach (['操作系统', '高等数学', '考研英语', '机器学习', '数据结构', '线性代数'] as $w): ?>
+      <a href="/search?q=<?= urlencode($w) ?>"><?= htmlspecialchars($w) ?></a>
+    <?php endforeach; ?>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">最新收录</h2>
+  <?php if (!$latest): ?>
+    <p class="empty">暂无数据,请先运行 <code>php scripts/seed.php</code> 导入模拟数据。</p>
+  <?php else: ?>
+  <ul class="result-list">
+    <?php foreach ($latest as $row): ?>
+    <li class="result-item">
+      <div class="result-head">
+        <span class="badge <?= file_icon($row['file_type']) ?>"><?= strtoupper(htmlspecialchars($row['file_type'])) ?></span>
+        <a class="result-title" href="/material/<?= (int)$row['id'] ?>"><?= htmlspecialchars($row['title']) ?></a>
+      </div>
+      <div class="result-meta">
+        <span>课程:<?= htmlspecialchars($row['course']) ?></span>
+        <span>大小:<?= format_size((int)$row['file_size']) ?></span>
+        <span>发布:<?= format_date($row['published_at']) ?></span>
+        <span>热度:<?= (int)$row['downloads'] ?></span>
+      </div>
+    </li>
+    <?php endforeach; ?>
+  </ul>
+  <?php endif; ?>
+</section>
+<?php include __DIR__ . '/../layout/footer.html'; ?>
