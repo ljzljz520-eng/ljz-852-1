@@ -16,10 +16,11 @@
 app/controller/     Index(首页/免责声明) Search(结果页) Material(详情页)
 app/service/        Manticore PDO 客户端(SphinxQL)
 app/view/           Raw PHP 模板
-config/manticore.php 搜索服务连接配置
-scripts/seed.php    建表 + 导入模拟数据
+config/manticore.php 搜索服务连接配置(支持 MANTICORE_HOST/PORT 环境变量覆盖)
+scripts/setup.sh    全新克隆的一键准备(PHP/Composer 依赖/搜索服务检查)
 scripts/start.sh    启动 Manticore 与 webman
 scripts/stop.sh     停止服务
+scripts/seed.php    建表 + 导入模拟数据
 ```
 
 ## 运行环境
@@ -33,7 +34,12 @@ scripts/stop.sh     停止服务
 
 ## 快速开始
 
+`vendor/` 与 `.runtime/` 不随仓库分发(见 .gitignore),全新克隆请先做一次准备:
+
 ```bash
+# 0. 全新克隆:准备 PHP 运行时、Composer 依赖与搜索服务(已就绪的步骤会自动跳过)
+bash scripts/setup.sh
+
 # 1. 启动搜索服务与 web 服务
 bash scripts/start.sh
 
@@ -45,6 +51,8 @@ php scripts/seed.php            # 本仓库环境: .runtime/php/php scripts/seed
 # 搜索   http://127.0.0.1:8787/search?q=操作系统
 # 详情   http://127.0.0.1:8787/material/1
 ```
+
+`scripts/start.sh` 会依次解析:PHP(`.runtime/php/php` → 系统 `php`)、Composer 依赖(缺失时自动 `composer install`)、搜索服务(`.runtime` 自带 searchd → 系统 `searchd` → 报错并给出 Docker/安装指引)。
 
 ## 索引结构(Manticore RT 表)
 
